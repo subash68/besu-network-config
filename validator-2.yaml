@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: besu-image
-          image: hyperledger/besu:latest
+          image: hyperledger/besu:24.10.0
           command:
             - /bin/bash
             - -c
@@ -30,6 +30,7 @@ spec:
                 --genesis-file=/genesis/genesis.json \
                 --data-path=/data/besu \
                 --node-private-key-file=/data/key \
+                --static-nodes-file=/data/static-nodes/static-nodes.json \
                 --bootnodes=enode://f43e56f11a07b62f98b803f256e353fbadbb5ebd9cd9bd08e602e67c318be01ccc4bcc242afdb94c825ffbfc0502362e0b152dd48ba3b862d79525f56cb68bc0@10.101.198.185:30303 \
                 --rpc-http-enabled \
                 --rpc-http-port=8545 \
@@ -60,6 +61,8 @@ spec:
               mountPath: /keys
             - name: validator-key-public
               mountPath: /keys-public
+            - name: static-nodes
+              mountPath: /data/static-nodes
       volumes:
         - name: validator-2-volume
           configMap:
@@ -75,3 +78,6 @@ spec:
         - name: validator-key-public
           secret:
             secretName: besu-key-pub-2
+        - name: static-nodes
+          configMap:
+            name: static-nodes
