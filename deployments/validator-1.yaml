@@ -68,7 +68,8 @@ spec:
           configMap:
             name: validator-1
         - name: besu-data
-          emptyDir: {}
+          persistentVolumeClaim: # Include pvc here
+            claimName: besu-1-data-pvc
         - name: genesis
           configMap:
             name: besu-genesis
