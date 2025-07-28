@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: validator-2
+  labels:
+    app: besu-validator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: besu-validator
+      instance: validator-2
+  template:
+    metadata:
+      labels:
+        app: besu-validator
+        instance: validator-2
+    spec:
+      containers:
+        - name: besu-image
+          image: hyperledger/besu:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              cp /keys/key /data/key && \
+              cp /keys-public/key.pub /data/key.pub && \
+              set -e 
+              besu \
+                --genesis-file=/genesis/genesis.json \
+                --data-path=/data/besu \
+                --node-private-key-file=/data/key \
+                --bootnodes=enode://f43e56f11a07b62f98b803f256e353fbadbb5ebd9cd9bd08e602e67c318be01ccc4bcc242afdb94c825ffbfc0502362e0b152dd48ba3b862d79525f56cb68bc0@10.101.198.185:30303 \
+                --rpc-http-enabled \
+                --rpc-http-port=8545 \
+                --rpc-http-host=0.0.0.0 \
+                --host-allowlist="*" \
+                --p2p-host=0.0.0.0 \
+                --p2p-port=30303 \
+                --rpc-http-api=ETH,NET,WEB3,IBFT \
+                --sync-mode=FULL \
+                --min-gas-price=0
+          ports:
+            - containerPort: 8545
+              name: rpc
+              protocol: TCP
+            - containerPort: 30303
+              name: p2p
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config
+              name: validator-2-volume
+              readOnly: true
+            - mountPath: /data/besu
+              name: besu-data
+            - mountPath: /genesis
+              name: genesis
+              readOnly: true
+            - name: validator-key
+              mountPath: /keys
+            - name: validator-key-public
+              mountPath: /keys-public
+      volumes:
+        - name: validator-2-volume
+          configMap:
+            name: validator-2
+        - name: besu-data
+          emptyDir: {}
+        - name: genesis
+          configMap:
+            name: besu-genesis
+        - name: validator-key
+          secret:
+            secretName: besu-key-2
+        - name: validator-key-public
+          secret:
+            secretName: besu-key-pub-2
