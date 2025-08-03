@@ -9,6 +9,8 @@ spec:
   selector:
     app: besu-validator
     instance: validator-1
+  externalIPs: # Figure our how this can work.
+    - 192.168.10.243
   ports:
     - name: http-rpc
       protocol: TCP
