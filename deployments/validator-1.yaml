@@ -40,7 +40,10 @@ spec:
                 --p2p-port=30303 \
                 --rpc-http-api=ETH,NET,WEB3,IBFT \
                 --sync-mode=FULL \
-                --min-gas-price=0
+                --min-gas-price=0 \
+                --metrics-push-enabled \
+                --metrics-push-port=9091 \
+                --metrics-push-host=10.108.156.244
           ports:
             - containerPort: 8545
               name: rpc
